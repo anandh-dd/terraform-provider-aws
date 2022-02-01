@@ -1503,7 +1503,6 @@ resource "aws_s3_bucket" "destination" {
 
 resource "aws_s3_bucket" "source" {
   bucket = %[1]q
-  acl    = "private"
 
   versioning {
     enabled = true
@@ -1512,6 +1511,11 @@ resource "aws_s3_bucket" "source" {
   lifecycle {
     ignore_changes = [replication_configuration]
   }
+}
+
+resource "aws_s3_bucket_acl" "test" {
+  bucket = aws_s3_bucket.source.id
+  acl    = "private"
 }
 
 resource "aws_s3_bucket_replication_configuration" "test" {
@@ -1576,7 +1580,6 @@ resource "aws_s3_bucket" "destination" {
 
 resource "aws_s3_bucket" "source" {
   bucket = %[1]q
-  acl    = "private"
 
   versioning {
     enabled = true
@@ -1585,6 +1588,11 @@ resource "aws_s3_bucket" "source" {
   lifecycle {
     ignore_changes = [replication_configuration]
   }
+}
+
+resource "aws_s3_bucket_acl" "test" {
+  bucket = aws_s3_bucket.source.id
+  acl    = "private"
 }
 
 resource "aws_s3_bucket_replication_configuration" "test" {

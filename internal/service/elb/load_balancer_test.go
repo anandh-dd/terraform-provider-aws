@@ -1248,7 +1248,6 @@ data "aws_partition" "current" {
 
 resource "aws_s3_bucket" "accesslogs_bucket" {
   bucket        = "%[1]s"
-  acl           = "private"
   force_destroy = true
 
   policy = <<EOF
@@ -1268,6 +1267,11 @@ resource "aws_s3_bucket" "accesslogs_bucket" {
   "Version": "2012-10-17"
 }
 EOF
+}
+
+resource "aws_s3_bucket_acl" "test" {
+  bucket = aws_s3_bucket.accesslogs_bucket.id
+  acl    = "private"
 }
 `, r)
 }

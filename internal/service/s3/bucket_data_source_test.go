@@ -74,12 +74,16 @@ func testAccBucketWebsiteDataSourceConfig(bucketName string) string {
 	return fmt.Sprintf(`
 resource "aws_s3_bucket" "bucket" {
   bucket = %[1]q
-  acl    = "public-read"
 
   website {
     index_document = "index.html"
     error_document = "error.html"
   }
+}
+
+resource "aws_s3_bucket_acl" "test" {
+  bucket = aws_s3_bucket.bucket.id
+  acl    = "public-read"
 }
 
 data "aws_s3_bucket" "bucket" {

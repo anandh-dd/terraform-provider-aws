@@ -634,7 +634,6 @@ func testAccCanaryBaseConfig(rName string) string {
 	return fmt.Sprintf(`
 resource "aws_s3_bucket" "test" {
   bucket        = %[1]q
-  acl           = "private"
   force_destroy = true
 
   versioning {
@@ -644,6 +643,11 @@ resource "aws_s3_bucket" "test" {
   tags = {
     Name = %[1]q
   }
+}
+
+resource "aws_s3_bucket_acl" "test" {
+  bucket = aws_s3_bucket.test.id
+  acl    = "private"
 }
 
 resource "aws_iam_role" "test" {

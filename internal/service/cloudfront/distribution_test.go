@@ -1417,8 +1417,13 @@ func originBucket(rName string) string {
 	return fmt.Sprintf(`
 resource "aws_s3_bucket" "s3_bucket_origin" {
   bucket = "%[1]s.origin-bucket"
+}
+
+resource "aws_s3_bucket_acl" "test" {
+  bucket = aws_s3_bucket.s3_bucket_origin.id
   acl    = "public-read"
 }
+
 `, rName)
 }
 
@@ -1426,6 +1431,10 @@ func backupBucket(rName string) string {
 	return fmt.Sprintf(`
 resource "aws_s3_bucket" "s3_backup_bucket_origin" {
   bucket = "%[1]s.backup-bucket"
+}
+
+resource "aws_s3_bucket_acl" "test" {
+  bucket = aws_s3_bucket.s3_backup_bucket_origin.id
   acl    = "public-read"
 }
 `, rName)
@@ -1435,8 +1444,12 @@ func logBucket(rName string) string {
 	return fmt.Sprintf(`
 resource "aws_s3_bucket" "s3_bucket_logs" {
   bucket        = "%[1]s.log-bucket"
-  acl           = "public-read"
   force_destroy = true
+}
+
+resource "aws_s3_bucket_acl" "test" {
+  bucket = aws_s3_bucket.s3_bucket_logs.id
+  acl    = "public-read"
 }
 `, rName)
 }

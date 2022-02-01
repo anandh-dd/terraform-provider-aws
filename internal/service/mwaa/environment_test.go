@@ -518,11 +518,15 @@ resource "aws_security_group" "test" {
 
 resource "aws_s3_bucket" "test" {
   bucket = %[1]q
-  acl    = "private"
 
   versioning {
     enabled = true
   }
+}
+
+resource "aws_s3_bucket_acl" "test" {
+  bucket = aws_s3_bucket.test.id
+  acl    = "private"
 }
 
 resource "aws_s3_bucket_public_access_block" "test" {
