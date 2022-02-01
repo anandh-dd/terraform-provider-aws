@@ -457,37 +457,31 @@ func BucketACLCreateResourceID(bucket, expectedBucketOwner, acl string) string {
 
 // BucketACLParseResourceID is a method for parsing the ID string
 // for the bucket name, accountID, and ACL if provided.
-func BucketACLParseResourceID(id string) (bucket, expectedBucketOwner, acl string, err error) {
-	parts := strings.Split(id, BucketAndExpectedBucketOwnerSeparator)
+func BucketACLParseResourceID(id string) (string, string, string, error) {
+	idParts := strings.Split(id, BucketAndExpectedBucketOwnerSeparator)
 
-	if len(parts) == 1 && parts[0] != "" {
-		partsWithACL := strings.Split(parts[0], BucketAclSeparator)
-		if len(partsWithACL) == 1 { // no ACL in ID
-			bucket = partsWithACL[0]
-			return
-		}
-		if len(partsWithACL) == 2 && partsWithACL[0] != "" && partsWithACL[1] != "" {
-			bucket = partsWithACL[0]
-			acl = partsWithACL[1]
-			return
+	// Bucket name and optional ACL
+	if len(idParts) == 1 && idParts[0] != "" {
+		parts := strings.Split(idParts[0], BucketAclSeparator)
+
+		if len(parts) == 1 { // no ACL in ID
+			return parts[0], "", "", nil
+		} else if len(parts) == 2 && parts[0] != "" && parts[1] != "" { // ACL in ID
+			return parts[0], "", parts[1], nil
 		}
 	}
 
-	if len(parts) == 2 && parts[0] != "" && parts[1] != "" {
-		partsWithACL := strings.Split(parts[1], BucketAclSeparator)
-		if len(partsWithACL) == 1 { // no ACL in ID
-			bucket = parts[0]
-			expectedBucketOwner = partsWithACL[0]
-			return
-		}
-		if len(partsWithACL) == 2 && partsWithACL[0] != "" && partsWithACL[1] != "" {
-			bucket = parts[0]
-			expectedBucketOwner = partsWithACL[0]
-			acl = partsWithACL[1]
-			return
+	// Bucket name, expected bucket owner (i.e. account ID) and optional ACL
+	if len(idParts) == 2 && idParts[0] != "" && idParts[1] != "" {
+		parts := strings.Split(idParts[1], BucketAclSeparator)
+
+		if len(parts) == 1 { // no ACL in ID
+			return idParts[0], parts[0], "", nil
+		} else if len(parts) == 2 && parts[0] != "" && parts[1] != "" { // ACL in ID
+			return idParts[0], parts[0], parts[1], nil
 		}
 	}
 
-	err = fmt.Errorf("unexpected format for ID (%s), expected BUCKET or BUCKET%[2]sEXPECTED_BUCKET_OWNER or BUCKET%[3]sACL or BUCKET%[2]sEXPECTED_BUCKET_OWNER%[3]sACL", id, BucketAndExpectedBucketOwnerSeparator, BucketAclSeparator)
-	return
+	return "", "", "", fmt.Errorf("unexpected format for ID (%s), expected BUCKET or BUCKET%[2]sEXPECTED_BUCKET_OWNER or BUCKET%[3]sACL "+
+		"or BUCKET%[2]sEXPECTED_BUCKET_OWNER%[3]sACL", id, BucketAndExpectedBucketOwnerSeparator, BucketAclSeparator)
 }
